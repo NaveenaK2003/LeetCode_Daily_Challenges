@@ -1,0 +1,14 @@
+class Solution {
+    public int maxScoreSightseeingPair(int[] values) {
+        int n = values.length;
+        int maxSum = Integer.MIN_VALUE;
+        int sum = values[0];
+        for (int i = 1; i < n; i++) {
+            if(values[i]-i+sum > maxSum)
+            maxSum=values[i]-i+sum;
+            if(values[i]+i>sum)
+            sum=values[i]+i;
+        }
+        return maxSum;
+    }
+}
