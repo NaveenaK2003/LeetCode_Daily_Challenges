@@ -1,0 +1,80 @@
+class Solution {
+    public int[] leftmostBuildingQueries(int[] h, int[][] queries) {
+        int n = queries.length;
+       
+        int q[][] = processQueries(queries, h);
+        int res[] = new int[n];
+        int ind = 0;
+        
+        Stack<Integer> st = new Stack<>();
+        
+        HashMap<Integer, Integer> map1 = new HashMap<>(); 
+        HashMap<Integer, Integer> map2 = new HashMap<>(); 
+
+        
+        for (int i = h.length - 1; i >= 0; i--) {
+           
+            while (!st.isEmpty() && h[st.peek()] <= h[i])
+              st.pop();
+            Stack<Integer> temp = new Stack<>();
+           
+            while (ind < n && q[ind][1] == i) {
+                int val = h[q[ind][0]]; 
+
+            
+                if (q[ind][0] == q[ind][1]) {
+                    res[q[ind][3]] = q[ind][0];
+                }
+                
+                else if (val < h[q[ind][1]]) {
+                    res[q[ind][3]] = q[ind][1];
+                }
+               
+                else {
+
+                    int limit = map1.getOrDefault(q[ind][0],h.length);
+                    int r = map2.getOrDefault(q[ind][0], -1);
+                    
+                    while (!st.isEmpty() && h[st.peek()] <= val && st.peek() < limit) {
+                        temp.push(st.pop());
+                    }
+                   
+                    if ((!st.isEmpty() && h[st.peek()] > val)) {
+                        res[q[ind][3]] = st.peek();
+                    }
+                   
+                    else
+                        res[q[ind][3]] = r;
+                    map2.put(q[ind][0], res[q[ind][3]]);
+                }
+                map1.put(q[ind][0], q[ind][1]);
+                ind++;
+            }
+
+           
+            while (!temp.isEmpty())
+                st.push(temp.pop());
+
+            if (ind == n)
+                return res;
+
+            st.push(i);
+        }
+        return res;
+    }
+
+    
+    int[][] processQueries(int queries[][], int h[]) {
+        int n = queries.length;
+        int q[][] = new int[n][4]; 
+        for (int i = 0; i < n; i++) {
+            q[i][0] = Math.min(queries[i][0], queries[i][1]); 
+            q[i][1] = Math.max(queries[i][0], queries[i][1]); 
+            q[i][2] = h[q[i][0]]; 
+            q[i][3] = i; 
+        }
+       
+        Arrays.sort(q, (a, b) -> (a[1] != b[1]) ? Integer.compare(b[1], a[1]) : Integer.compare(a[2], b[2]));
+        return q;
+    }
+}
